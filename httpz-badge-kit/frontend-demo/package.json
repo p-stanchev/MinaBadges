@@ -1,0 +1,16 @@
+{
+  "name": "httpz-demo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "lucide": "^0.462.0",
+    "mina-attestations": "^0.5.3",
+    "o1js": "^2.3.0"
+  },
+  "devDependencies": {
+    "vite": "^4.0.0"
+  }
+}

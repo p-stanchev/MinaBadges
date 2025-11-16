@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>httpz Badge Kit - Local Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #0a0a0a;
+      background-color: #050505;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #0f0f0f 0%, #020202 65%);
+      color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      padding: 48px 24px 64px;
+    }
+
+    .shell {
+      width: min(1200px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-size: 12px;
+      color: #a1a1aa;
+      margin-bottom: 12px;
+    }
+
+    header h1 {
+      font-size: clamp(32px, 5vw, 56px);
+      margin: 0;
+      color: #fafafa;
+    }
+
+    header p {
+      margin: 12px auto 0;
+      max-width: 640px;
+      color: #d4d4d8;
+      line-height: 1.5;
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .badge-card {
+      border-radius: 18px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(135deg, rgba(15, 15, 15, 0.95), rgba(5, 5, 5, 0.9));
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+      min-height: 210px;
+    }
+
+    .badge-card[data-state="verified"] {
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .badge-card h3 {
+      margin: 0;
+      font-size: 20px;
+      color: #fafafa;
+    }
+
+    .badge-desc {
+      margin: 0;
+      color: #a1a1aa;
+      min-height: 48px;
+      line-height: 1.4;
+    }
+
+    .badge-icon {
+      width: 36px;
+      height: 36px;
+      padding: 10px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .badge-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 1.5;
+    }
+
+    .badge-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-status {
+      font-size: 13px;
+      color: #a1a1aa;
+    }
+
+    .badge-actions {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-actions button {
+      flex: 1;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: #fafafa;
+      color: #050505;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .badge-actions button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .activity-panel {
+      border-radius: 24px;
+      background: rgba(5, 5, 5, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 24px;
+      min-height: 200px;
+    }
+
+    .activity-panel h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+    }
+
+    #activity-log {
+      font-size: 15px;
+      color: #d4d4d8;
+      line-height: 1.6;
+      min-height: 120px;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <header>
+      <p class="eyebrow">Local Prototype</p>
+      <h1>httpz Badge Kit</h1>
+      <p>Preview a Mina attestations verifier with a mock wallet. Each badge requests a presentation, the wallet builds
+        a proof, and the backend verifies it using mina-attestations.</p>
+    </header>
+
+    <section class="badge-grid" id="badge-grid"></section>
+
+    <section class="activity-panel">
+      <h2>Verification Activity</h2>
+      <div id="activity-log">Select a badge to start the flow.</div>
+    </section>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
