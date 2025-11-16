@@ -1,4 +1,4 @@
-import { createPresentationPayload } from "./wallet-sim.js";
+import walletBridge from "./wallet-provider.js";
 
 const BACKEND_URL = "http://localhost:4000";
 
@@ -11,7 +11,9 @@ const stageMessages = {
 
 function logStatus(callback, stage, payload) {
   if (!callback) return;
-  callback({ stage, message: stageMessages[stage] ?? stage, payload });
+  const message =
+    (payload && payload.message) ?? stageMessages[stage] ?? stage;
+  callback({ stage, message, payload });
 }
 
 async function fetchJSON(path, options) {
@@ -49,8 +51,12 @@ async function verifyBadge({ badgeType, onStatus }) {
     logStatus(onStatus, "request");
     const request = await requestPresentation(badgeType);
 
-    logStatus(onStatus, "wallet");
-    const presentationJson = await createPresentationPayload(
+    logStatus(onStatus, "wallet", {
+      message: walletBridge.usingWallet()
+        ? "Waiting for wallet approval"
+        : stageMessages.wallet
+    });
+    const presentationJson = await walletBridge.createPresentation(
       request.requestJson,
       window.location.origin
     );
@@ -75,7 +81,8 @@ async function verifyBadge({ badgeType, onStatus }) {
 
 const HttpzBadgeKit = {
   listBadges: getCatalog,
-  verify: verifyBadge
+  verify: verifyBadge,
+  wallet: walletBridge
 };
 
 window.HttpzBadgeKit = HttpzBadgeKit;

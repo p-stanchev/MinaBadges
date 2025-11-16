@@ -65,6 +65,60 @@
       gap: 16px;
     }
 
+    .wallet-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 32px;
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(120deg, rgba(12, 12, 12, 0.9), rgba(7, 7, 7, 0.85));
+    }
+
+    .wallet-panel h2 {
+      margin: 4px 0 8px;
+      font-size: 24px;
+      color: #fafafa;
+    }
+
+    .wallet-panel p {
+      margin: 0;
+      color: #a1a1aa;
+      line-height: 1.5;
+    }
+
+    .wallet-label {
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-size: 12px;
+      color: #a1a1aa;
+    }
+
+    .wallet-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .wallet-actions button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      background: #fafafa;
+      color: #050505;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .wallet-actions button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
     .badge-card {
       border-radius: 18px;
       padding: 20px;
@@ -180,6 +234,18 @@
       <p>Preview a Mina attestations verifier with a mock wallet. Each badge requests a presentation, the wallet builds
         a proof, and the backend verifies it using mina-attestations.</p>
     </header>
+
+    <section class="wallet-panel" id="wallet-panel">
+      <div>
+        <p class="wallet-label">Wallet status</p>
+        <h2 id="wallet-status">Mock wallet active</h2>
+        <p id="wallet-note">Install Auro or Pallad wallet to try real proofs, or stay on the built-in mock wallet.</p>
+      </div>
+      <div class="wallet-actions">
+        <button type="button" id="wallet-connect" disabled>Connect wallet</button>
+        <button type="button" id="wallet-install" disabled>Install sample credential</button>
+      </div>
+    </section>
 
     <section class="badge-grid" id="badge-grid"></section>
 

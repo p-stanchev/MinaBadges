@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Mina / Auro — Sample Credential Store</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+</head>
+<body>
+  <h1>Mina / Auro — Sample Credential Store</h1>
+  <button id="store">Store sample credential</button>
+  <pre id="status">Status: waiting…</pre>
+
+  <script>
+    const btn = document.getElementById("store");
+    const statusEl = document.getElementById("status");
+
+    function setStatus(msg) {
+      statusEl.textContent = msg;
+    }
+
+    btn.onclick = async () => {
+      if (!window.mina) {
+        alert("Auro wallet not found");
+        return;
+      }
+
+      setStatus("Storing sample credential…");
+
+      const credentialJson = `{"version":"v0","witness":{"type":"native","issuer":{"_type":"PublicKey","value":"B62qqQ1Mj3MJ9eEQ6xNUZQhhmjLMHc6JLkrCoWUZeaBHYqbFN1MYnN2"},"issuerSignature":{"_type":"Signature","value":{"r":"15393765873810526404757183455892935456655629080804545608015308347104355828912","s":"18457299830422563704675317159125780369508410759053165030316089385187810720709"}}},"credential":{"owner":{"_type":"PublicKey","value":"B62qk8FDgbyaMjAMzoMtuX9DFQnAqdBEiTCimsMy5GmctycNuEGShp8"},"data":{"fullName":{"_type":"DynamicString","maxLength":80,"value":"Avery Basalt","_isFactory":true},"nationality":{"_type":"DynamicString","maxLength":2,"value":"AT","_isFactory":true},"residency":{"_type":"DynamicString","maxLength":2,"value":"DE","_isFactory":true},"dateOfBirthMs":{"_type":"UInt64","value":"961286400000"},"kycTier":{"_type":"UInt64","value":"3"},"sanctionsCleared":{"_type":"Bool","value":true},"emailDomain":{"_type":"DynamicString","maxLength":120,"value":"minabadges.dev","_isFactory":true},"emailVerified":{"_type":"Bool","value":true},"uniqueHash":{"_type":"Field","value":"1252491981754763847348342345234"}}},"metadata":null}`;
+      const credential = JSON.parse(credentialJson);
+
+      try {
+        const res = await window.mina.storePrivateCredential(credential).catch(e => e);
+        console.log(res);
+        if (res && typeof res.credential === "string") {
+          setStatus("Stored OK:\n" + res.credential.slice(0,80) + "…");
+        } else if (res && typeof res.code === "number") {
+          setStatus("Error from Auro: " + res.message + " (code " + res.code + ")");
+        } else {
+          setStatus("Unknown response, see console");
+        }
+      } catch (e) {
+        console.error(e);
+        setStatus("Exception: " + (e.message || String(e)));
+      }
+    };
+  </script>
+</body>
+</html>

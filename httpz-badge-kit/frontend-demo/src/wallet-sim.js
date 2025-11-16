@@ -39,3 +39,8 @@ export async function createPresentationPayload(requestJson, origin) {
   });
   return Presentation.toJSON(presentation);
 }
+
+export async function getSampleCredentialJSON() {
+  const { credential } = await walletReady;
+  return Credential.toJSON(credential);
+}

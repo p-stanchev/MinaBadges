@@ -1,7 +1,13 @@
 import HttpzBadgeKit from "./badge-sdk.js";
+import walletBridge from "./wallet-provider.js";
 import { createElement, icons } from "lucide";
 
+let lastWalletState = null;
+let walletNoteOverride = null;
+let walletNoteTimer = null;
+
 document.addEventListener("DOMContentLoaded", () => {
+  setupWalletPanel();
   bootstrap();
 });
 
@@ -19,6 +25,89 @@ async function bootstrap() {
     });
   } catch (error) {
     log.textContent = `Failed to load badges: ${error.message}`;
+  }
+}
+
+function setupWalletPanel() {
+  const connectBtn = document.getElementById("wallet-connect");
+  const installBtn = document.getElementById("wallet-install");
+
+  if (!connectBtn || !installBtn) {
+    return;
+  }
+
+  connectBtn.addEventListener("click", async () => {
+    connectBtn.disabled = true;
+    try {
+      await walletBridge.connectWallet();
+      setWalletNote("Wallet connected", 4000);
+    } catch (error) {
+      console.error("Wallet connect failed", error);
+      setWalletNote(error.message || "Failed to connect wallet", 6000);
+    } finally {
+      connectBtn.disabled = false;
+    }
+  });
+
+  installBtn.addEventListener("click", async () => {
+    installBtn.disabled = true;
+    try {
+      await walletBridge.installSampleCredential();
+      setWalletNote("Sample credential stored in wallet", 5000);
+    } catch (error) {
+      console.error("Failed to store credential", error);
+      setWalletNote(error.message || "Failed to store credential", 6000);
+    } finally {
+      installBtn.disabled = false;
+    }
+  });
+
+  walletBridge.subscribe((state) => {
+    lastWalletState = state;
+    renderWalletState(state);
+    connectBtn.disabled = !state.available || state.connected;
+    installBtn.disabled = !(state.mode === "wallet" && state.connected);
+  });
+}
+
+function renderWalletState(state) {
+  const statusEl = document.getElementById("wallet-status");
+  const noteEl = document.getElementById("wallet-note");
+  if (!statusEl || !noteEl) {
+    return;
+  }
+  const providerName = state.providerInfo?.name ?? "Wallet";
+  if (state.mode === "wallet" && state.connected) {
+    statusEl.textContent = `${providerName} connected`;
+    const account = state.accounts[0];
+    const baseNote = account ? `Using ${shortPublicKey(account)} for proofs.` : "Ready to prove badges.";
+    noteEl.textContent = walletNoteOverride ?? state.lastError ?? baseNote;
+    return;
+  }
+  if (state.available) {
+    statusEl.textContent = "Wallet detected";
+    const baseNote =
+      "Connect to run proofs through your wallet, or stay on the built-in mock wallet.";
+    noteEl.textContent = walletNoteOverride ?? state.lastError ?? baseNote;
+    return;
+  }
+  statusEl.textContent = "Mock wallet active";
+  noteEl.textContent =
+    walletNoteOverride ??
+    "Install Auro or Pallad to try real wallets. The mock wallet stays ready.";
+}
+
+function setWalletNote(message, ttl = 5000) {
+  walletNoteOverride = message;
+  clearTimeout(walletNoteTimer);
+  walletNoteTimer = window.setTimeout(() => {
+    walletNoteOverride = null;
+    if (lastWalletState) {
+      renderWalletState(lastWalletState);
+    }
+  }, ttl);
+  if (lastWalletState) {
+    renderWalletState(lastWalletState);
   }
 }
 
@@ -101,4 +190,11 @@ function renderIcon(name) {
   svg.setAttribute("fill", "none");
   svg.setAttribute("stroke-width", "1.5");
   return svg.outerHTML;
+}
+
+function shortPublicKey(key) {
+  if (typeof key !== "string" || key.length < 10) {
+    return key;
+  }
+  return `${key.slice(0, 6)}…${key.slice(-4)}`;
 }
